@@ -1,7 +1,19 @@
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: sans-serif;
+}
+
+.titre {
+  text-align: center;
+  color: #1a3a5c;
+}
+
 .compteur {
+  text-align: center;
   color: #888;
-  font-size: 0.9rem;
-  margin: 0.8rem 0;
+  margin: 1rem 0;
 }
 
 .message {
@@ -18,39 +30,8 @@
   padding: 1rem;
   margin: 1rem 0;
   color: #a01a1a;
-  text-align: center;
-}
-
-.bouton {
-  padding: 0.6rem 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border: 1px solid #1a3a5c;
-  border-radius: 6px;
-  background: #1a3a5c;
-  color: white;
-  transition: background 0.2s;
-}
-
-.bouton:hover {
-  background: #2a4d70;
-}
-
-.bouton:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
 }
 
 .erreur button {
   margin-top: 0.5rem;
-  background-color: #a01a1a;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.erreur button:hover {
-  background-color: #7d1414;
 }
