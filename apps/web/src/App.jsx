@@ -101,3 +101,5 @@ const App = () => {
 };
 
 export default App;
+
+// Sous-tâche A complétée par Moussa
