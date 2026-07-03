@@ -1,0 +1,43 @@
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+  font-family: sans-serif;
+}
+
+.titre {
+  text-align: center;
+  color: #1a3a5c;
+}
+
+.compteur {
+  text-align: center;
+  color: #888;
+  margin: 1rem 0;
+}
+
+.message {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 2rem;
+}
+
+.erreur {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: #a01a1a;
+}
+
+.erreur button {
+  margin-top: 0.5rem;
+}
+.messageVide {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 1rem;
+}
