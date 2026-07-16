@@ -14,12 +14,10 @@ const App = () => {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Recuperer la session actuelle au montage
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
     });
 
-    // Ecouter tout changement de session (login, logout, refresh)
     const { data: subscription } = supabase.auth.onAuthStateChange(
       (_event, newSession) => {
         setSession(newSession);
@@ -32,25 +30,23 @@ const App = () => {
   const charger = async () => {
     setChargement(true);
     setErreur(null);
-    try {
-      const reponse = await fetch("/evenements.json");
-      if (!reponse.ok) throw new Error(`Erreur HTTP ${reponse.status}`);
-      const data = await reponse.json();
+
+    const { data, error } = await supabase
+      .from("evenements")
+      .select("*, profiles (nom)")
+      .order("date_debut", { ascending: true });
+
+    if (error) {
+      setErreur(error.message);
+    } else {
       setEvenements(data);
-    } catch (e) {
-      setErreur(e.message);
-    } finally {
-      setChargement(false);
     }
+    setChargement(false);
   };
 
   useEffect(() => {
     charger();
   }, []);
-
-  const ajouterEvenement = (nouvel) => {
-    setEvenements((precedents) => [nouvel, ...precedents]);
-  };
 
   return (
     <BrowserRouter>
@@ -69,11 +65,11 @@ const App = () => {
         />
         <Route
           path="/nouveau"
-          element={<NouvelEvenement onAjouter={ajouterEvenement} />}
+          element={<NouvelEvenement onAjoutReussi={charger} />}
         />
         <Route
           path="/evenement/:id"
-          element={<Detail evenements={evenements} />}
+          element={<Detail evenements={evenements} session={session} />}
         />
         <Route path="/auth" element={<Auth />} />
       </Routes>

@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import styles from "./NouvelEvenement.module.css";
 
-const NouvelEvenement = ({ onAjouter }) => {
+const NouvelEvenement = ({ onAjoutReussi }) => {
   const [titre, setTitre] = useState("");
   const [categorie, setCategorie] = useState("concert");
   const [lieu, setLieu] = useState("");
   const [prix, setPrix] = useState(0);
   const [erreurs, setErreurs] = useState({});
+  const [erreurServeur, setErreurServeur] = useState(null);
+  const [enCours, setEnCours] = useState(false);
   const navigate = useNavigate();
+
   const valider = () => {
     const e = {};
     if (titre.trim().length < 3) {
@@ -23,26 +27,45 @@ const NouvelEvenement = ({ onAjouter }) => {
     return e;
   };
 
-  const soumettre = (event) => {
+  const soumettre = async (event) => {
     event.preventDefault();
+    setErreurServeur(null);
+
     const erreursTrouvees = valider();
     if (Object.keys(erreursTrouvees).length > 0) {
       setErreurs(erreursTrouvees);
       return;
     }
 
-    const nouvel = {
-      id: Date.now(),
+    setEnCours(true);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setErreurServeur("Vous devez etre connecte.");
+      setEnCours(false);
+      return;
+    }
+
+    const { error } = await supabase.from("evenements").insert({
       titre: titre.trim(),
       categorie,
       lieu_nom: lieu.trim(),
       prix: Number(prix),
       date_debut: new Date().toISOString(),
-      image_url: `https://placehold.co/400x250/1a3a5c/fff?text=${categorie}`,
-    };
+      organisateur_id: user.id,
+    });
 
-    onAjouter(nouvel);
-    navigate("/");
+    setEnCours(false);
+
+    if (error) {
+      setErreurServeur(error.message);
+    } else {
+      onAjoutReussi();
+      navigate("/");
+    }
   };
 
   return (
@@ -54,14 +77,14 @@ const NouvelEvenement = ({ onAjouter }) => {
         <input
           type="text"
           value={titre}
-          onChange={e => setTitre(e.target.value)}
+          onChange={(e) => setTitre(e.target.value)}
         />
         {erreurs.titre && <span className={styles.erreur}>{erreurs.titre}</span>}
       </label>
 
       <label className={styles.champ}>
         Categorie
-        <select value={categorie} onChange={e => setCategorie(e.target.value)}>
+        <select value={categorie} onChange={(e) => setCategorie(e.target.value)}>
           <option value="concert">Concert</option>
           <option value="expo">Exposition</option>
           <option value="conference">Conference</option>
@@ -75,7 +98,7 @@ const NouvelEvenement = ({ onAjouter }) => {
         <input
           type="text"
           value={lieu}
-          onChange={e => setLieu(e.target.value)}
+          onChange={(e) => setLieu(e.target.value)}
         />
         {erreurs.lieu && <span className={styles.erreur}>{erreurs.lieu}</span>}
       </label>
@@ -86,13 +109,17 @@ const NouvelEvenement = ({ onAjouter }) => {
           type="number"
           min="0"
           value={prix}
-          onChange={e => setPrix(e.target.value)}
+          onChange={(e) => setPrix(e.target.value)}
         />
         {erreurs.prix && <span className={styles.erreur}>{erreurs.prix}</span>}
       </label>
 
-      <button type="submit" className={styles.bouton}>
-        Ajouter
+      {erreurServeur && (
+        <p className={styles.erreur}>Erreur : {erreurServeur}</p>
+      )}
+
+      <button type="submit" disabled={enCours} className={styles.bouton}>
+        {enCours ? "Envoi..." : "Ajouter"}
       </button>
     </form>
   );
