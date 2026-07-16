@@ -57,6 +57,8 @@ const Detail = ({ evenements, session }) => {
         <dd>{date}</dd>
         <dt>Prix</dt>
         <dd className={styles.prix}>{prix}</dd>
+        <dt>Organise par</dt>
+        <dd>{evenement.profiles ? evenement.profiles.nom : "Equipe SenEvent"}</dd>
       </dl>
 
       <BoutonInscription evenementId={evenement.id} session={session} />
