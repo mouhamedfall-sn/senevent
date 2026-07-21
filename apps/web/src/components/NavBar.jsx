@@ -1,15 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { supabase } from "../lib/supabase";
+import { seDeconnecter } from "@senevent/shared";
 import styles from "./NavBar.module.css";
-
 const NavBar = ({ session }) => {
   const lienActif = ({ isActive }) =>
     isActive ? `${styles.lien} ${styles.lienActif}` : styles.lien;
-
-  const seDeconnecter = async () => {
-    await supabase.auth.signOut();
+  const seDeconnecterLocal = async () => {
+    await seDeconnecter();
   };
-
   return (
     <nav className={styles.nav}>
       <div className={styles.logo}>SenEvent</div>
@@ -25,7 +22,7 @@ const NavBar = ({ session }) => {
         {session ? (
           <>
             <span className={styles.email}>{session.user.email}</span>
-            <button onClick={seDeconnecter} className={styles.deconnexion}>
+            <button onClick={seDeconnecterLocal} className={styles.deconnexion}>
               Se deconnecter
             </button>
           </>
@@ -38,5 +35,4 @@ const NavBar = ({ session }) => {
     </nav>
   );
 };
-
 export default NavBar;

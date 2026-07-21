@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { supabase } from "../lib/supabase";
+import { sInscrire, seConnecter, getSupabase } from "@senevent/shared";
 import { useNavigate } from "react-router-dom";
 import styles from "./Auth.module.css";
-
 const Auth = () => {
   const [mode, setMode] = useState("login"); // "login" | "signup"
   const [email, setEmail] = useState("");
@@ -11,31 +10,21 @@ const Auth = () => {
   const [erreur, setErreur] = useState(null);
   const [enCours, setEnCours] = useState(false);
   const navigate = useNavigate();
-
   const soumettre = async (event) => {
     event.preventDefault();
     setErreur(null);
     setEnCours(true);
     try {
       if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password: motDePasse,
-        });
-        if (error) throw error;
-
+        const data = await sInscrire(email, motDePasse);
         if (data.user) {
-          const { error: e2 } = await supabase
+          const { error: e2 } = await getSupabase()
             .from("profiles")
             .insert({ id: data.user.id, nom, role: "PUBLIC" });
           if (e2) throw e2;
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password: motDePasse,
-        });
-        if (error) throw error;
+        await seConnecter(email, motDePasse);
       }
       navigate("/");
     } catch (e) {
@@ -44,11 +33,9 @@ const Auth = () => {
       setEnCours(false);
     }
   };
-
   return (
     <form className={styles.form} onSubmit={soumettre}>
       <h2>{mode === "signup" ? "Creer un compte" : "Se connecter"}</h2>
-
       {mode === "signup" && (
         <label className={styles.champ}>
           Nom d'affichage
@@ -60,7 +47,6 @@ const Auth = () => {
           />
         </label>
       )}
-
       <label className={styles.champ}>
         Email
         <input
@@ -70,7 +56,6 @@ const Auth = () => {
           required
         />
       </label>
-
       <label className={styles.champ}>
         Mot de passe
         <input
@@ -81,13 +66,10 @@ const Auth = () => {
           required
         />
       </label>
-
       {erreur && <p className={styles.erreur}>{erreur}</p>}
-
       <button type="submit" disabled={enCours} className={styles.bouton}>
         {enCours ? "..." : mode === "signup" ? "Creer le compte" : "Se connecter"}
       </button>
-
       <button
         type="button"
         onClick={() => setMode(mode === "signup" ? "login" : "signup")}
@@ -100,5 +82,4 @@ const Auth = () => {
     </form>
   );
 };
-
 export default Auth;
