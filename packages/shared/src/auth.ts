@@ -1,9 +1,17 @@
 import { getSupabase } from "./supabaseClient";
 
-export async function sInscrire(email: string, motDePasse: string) {
+// Le nom d'affichage est transmis a Supabase dans les metadonnees du compte.
+// Le declencheur SQL on_auth_user_created le lit pour creer le profil.
+// Si aucun nom n'est donne (cas du mobile), le profil prend le debut de l'email.
+export async function sInscrire(
+  email: string,
+  motDePasse: string,
+  nom?: string
+) {
   const { data, error } = await getSupabase().auth.signUp({
     email,
     password: motDePasse,
+    options: { data: { nom } },
   });
   if (error) throw error;
   return data;
