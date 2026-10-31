@@ -5,7 +5,7 @@
   "dependencies": {
     "@senevent/shared": "*",
     "@supabase/supabase-js": "^2.0.0",
-    "expo": "^54.0.0",
+    "expo": "~54.0.37",
     "expo-constants": "~18.0.14",
     "expo-linking": "~8.0.12",
     "expo-router": "~6.0.24",
